@@ -44,7 +44,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   actions: write
 
 jobs:
@@ -179,6 +179,21 @@ jobs:
       #   - CLOUDFLARE_PROJECT_NAME  Cloudflare Pages 项目名（需提前在 Dashboard 创建）
       # 配置教程详见 README「自动部署到 Cloudflare Pages」章节。
       # --------------------------------------------------------------------------------
+      # --------------------------------------------------------------------------------
+      # 📄 PUBLISH REPORT TO GITHUB PAGES / 报告页发布到 gh-pages（预览部署新增）
+      # --------------------------------------------------------------------------------
+      # 上游 Actions 模式不回写结果（无 S3 时报告随 runner 丢弃）。此处把 output/ 发布到
+      # gh-pages 分支，配合 GitHub Pages 在 https://caijinming.github.io/TrendRadar/ 查看。
+      # --------------------------------------------------------------------------------
+      - name: Publish report to GitHub Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          keep_files: true
+          commit_message: "📊 Hot report (run ${{ github.run_id }})"
+
       - name: Check Cloudflare config
         if: success()
         id: cf_check
